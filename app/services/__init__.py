@@ -10,10 +10,10 @@ DB_NAME = os.getenv('DB_NAME')
 conn = psycopg2.connect(host="localhost", database=DB_NAME,
                             user=USER, password=PASSWORD)
 
-cur = conn.cursor()
 
+def create_table() :
 
-def create_database() :
+    cur = conn.cursor()
     
     cur.execute("""
             create table if not exists animes (
@@ -25,11 +25,13 @@ def create_database() :
             """)
     conn.commit()
     cur.close()
-    conn.close()
+  
 
 
 def add_anime(data):
     
+    create_table()
+    cur = conn.cursor()
     anime = data['anime'].title()
     season = data['season']
     released_date = data['released_date']
@@ -41,7 +43,7 @@ def add_anime(data):
     if len(registros) > 0 :
         conn.commit()
         cur.close()
-        conn.close()
+       
         return []
         
     document = (anime, released_date, season)
@@ -50,12 +52,12 @@ def add_anime(data):
     
     conn.commit()
     cur.close()
-    conn.close()
-    
+   
     return list(document)
 
 def load_animes():
-    
+    create_table()
+    cur = conn.cursor()
     query = f"SELECT * FROM animes"
     cur.execute(query)
     registros = list(cur.fetchall())
@@ -63,18 +65,20 @@ def load_animes():
     if len(registros) > 0 :
         conn.commit()
         cur.close()
-        conn.close()
+       
         
         return registros
     
     conn.commit()
     cur.close()
-    conn.close()
+   
         
     return {"data":[]}
 
 
 def get_by_id(id):
+    create_table()
+    cur = conn.cursor()
     
     query = f"SELECT * FROM animes WHERE animes.id = {id}"
     cur.execute(query)
@@ -86,9 +90,7 @@ def get_by_id(id):
         new_reply = {"data":[{"id":reply[0][0],"anime":reply[0][1],"released_date":transform_data,"season":reply[0][3]}]}
         
         cur.close()
-        conn.close()
         return new_reply
     
     cur.close()
-    conn.close()
     return {"data":[]}

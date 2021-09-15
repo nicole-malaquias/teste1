@@ -9,6 +9,9 @@ bp_animes = Blueprint('animes/<int:anime_id>', __name__, url_prefix='/api')
 def filter(anime_id):
     
     query = get_by_id(anime_id)
-    if len(query) == 0 :
+    data = query['data']
+    
+    if len(data) == 0 :
+        
         return jsonify(query),404
     return str(query)
